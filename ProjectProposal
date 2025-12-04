@@ -1,0 +1,156 @@
+Credit Card Fraud Detection – Project Proposal
+Emma Winkeler, Bashshar Bin Atif, Felipe Coimbra Salomao, Kirill Delyukin, Jacob Dreyer
+1. Problem Definition
+Credit card fraud is a widespread and costly issue for both consumers and financial institutions. Fraud leads to billions of dollars in annual losses and forces customers to endure the inconvenient process of disputing unauthorized charges, cancelling cards, and waiting for replacements.
+Due to the massive volume of transactions that occur every second, it is impossible for banks to manually verify every payment. Fraudulent patterns are often subtle, dynamic, and intentionally deceptive—making traditional rule-based systems insufficient.
+Machine learning enables the automated detection of suspicious behavioral patterns by learning from historical transaction data. Because ML models can adapt to new trends and anomalies, they offer a scalable and robust solution for fraud detection.
+
+2. Project Objective
+Develop a machine learning system that evaluates each new credit card transaction by comparing it to the cardholder’s historical behavior. The model will output a probability that the transaction is fraudulent.
+Primary Goal
+Minimize false negatives
+ Prevent customers from losing money by correctly identifying fraudulent transactions wherever possible.
+
+
+Secondary Goal
+Minimize false positives
+ Avoid unnecessary declines of legitimate purchases and reduce customer inconvenience.
+
+
+
+3. Data & System Context
+Banks have access to historical transaction patterns for each customer, including:
+Time of day transactions typically occur
+
+Purchase amounts
+
+
+Merchant types and categories
+
+
+Geographic locations
+
+
+Frequency and patterns of spending
+
+
+This behavioral history allows the model to assess how “unusual” a new transaction is relative to past activity.
+
+4. Proposed Methods
+This section outlines how the project will be executed from preprocessing through model evaluation.
+4.1 Data Preprocessing
+Display descriptive statistics and check for missing values
+
+
+Handle missing data via imputation or removal
+
+
+One-hot encode categorical features (e.g., merchant type, location)
+
+
+Z-normalize continuous variables (e.g., purchase amount, time-of-day encoding)
+
+
+4.2 Model Training
+Train and compare multiple supervised learning models:
+Logistic Regression
+
+
+Baseline linear classifier
+
+
+Interpretable and efficient
+
+
+k-Nearest Neighbors (k = 3)
+
+
+Non-parametric, similarity-based classifier
+
+
+Useful for detecting unusual transactions resembling no known patterns
+
+
+Support Vector Machine (RBF Kernel)
+
+
+Captures nonlinear relationships
+
+
+Often effective with high-dimensional data
+
+
+(Optional) Additional Models for Exploration
+
+
+Random Forest
+
+
+Gradient Boosting (e.g., XGBoost, LightGBM)
+
+
+Neural networks (if dataset size warrants)
+
+
+4.3 Evaluation Metrics
+Evaluate each model using:
+Confusion Matrix
+
+
+Precision
+
+
+Recall (critical for minimizing false negatives)
+
+
+F1-Score
+
+
+Accuracy
+
+
+ROC Curve
+
+
+Area Under the Curve (AUC)
+
+
+4.4 Model Selection
+Select the best model based on the above metrics, prioritizing recall and AUC while balancing precision to avoid excessive false positives.
+4.5 Deployment Plan
+Package the chosen model
+
+
+Integrate it into a simulated fraud-scoring pipeline
+
+
+Test on a separate validation dataset
+
+
+Report performance and recommendations for real-world deployment
+
+
+
+5. Project Workflow Summary
+Data exploration and cleaning
+
+
+Feature engineering (one-hot encoding, normalization)
+
+
+Model training (Logistic Regression, KNN, SVM, optional models)
+
+
+Model evaluation using multiple metrics
+
+
+ROC/AUC comparison
+
+
+Model selection
+
+
+Deployment and final reporting
+
+
+
