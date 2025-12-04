@@ -1,91 +1,58 @@
 ###Random Forest Classification Model:
 Confusion Matrix: 
-
 [[28444     3]
-
  [    7    27]]
-
 Accuracy:  0.9996
-
 Precision: 0.9000
-
 Recall:    0.7941
-
 F1-score:  0.8438
-
 Test Time: 146.86 ms
-
 
 ###KNN Model:
 Confusion Matrix:
-
 [[12466     3]
-
  [    1    16]]
-
 Accuracy:  0.9997
-
 Precision: 0.8421
-
 Recall:    0.9412
-
 F1-score:  0.8889
-
 Test Time: 12213.38 ms
-
 
 ###MLP Model:
 Confusion Matrix:
-
 [[12466     3]
-
  [    2    15]]
-
 Accuracy:  0.9996
-
 Precision: 0.8333
-
 Recall:    0.8824
-
 F1-score:  0.8571
-
 Test Time: 13.73 ms
 
 ###Logistic Regression Model:
 Confusion Matrix:
-
 [[12228   241]
-
  [    0    17]]
-
 Accuracy:  0.9807
-
 Precision: 0.0659
-
 Recall:    1.0000
-
 F1-score:  0.1236
-
 Test Time: 2.13 ms
-
 
 ###SVM Model:
 Confusion Matrix:
-
 [[12467     2]
-
  [    6    11]]
-
 Accuracy:  0.9994
-
 Precision: 0.8462
-
 Recall:    0.6471
-
 F1-score:  0.7333
-
 Test Time: 1677.88 ms
-
 _ _ _ _ 
 
-The model with the highest overall accuracy is the KNN model. While the KNN model doesn't have the lowest false negative rate, the model with the lowest false negative rate is the Logistic Regression model whose accuracy and precision are comparatively atrocious and who has an extremely high false positive rate. Furthermore, the difference in the number of false negatives is a mere single case, a negligible amount. In the end, we recommend choosing the KNN Model to protect against credit card fraud.
+The model with the highest overall accuracy is the KNN model. 
+While the KNN model doesn't have the lowest false negative rate, 
+the model with the lowest false negative rate is the Logistic Regression model 
+whose accuracy and precision are comparatively atrocious and who has an 
+extremely high false positive rate. Furthermore, the difference in the 
+number of false negatives is a mere single case, a negligible amount. 
+In the end, we recommend choosing the KNN Model to protect against credit card fraud.
