@@ -1,0 +1,219 @@
+from google.colab import drive
+drive.mount('/content/drive')
+
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score, roc_curve, auc
+import matplotlib.pyplot as plt
+import time
+
+data_set = pd.read_csv('/content/drive/MyDrive/DS3000/Project/creditcard.csv')
+
+# 1) Drop rows with missing target label
+data_set = data_set.dropna(subset=['Class'])
+
+print("Remaining rows:", len(data_set))
+print("Missing in Class:", data_set['Class'].isna().sum())
+
+display(data_set.describe())
+
+# Inspect for missing data
+display(data_set.isnull().sum())
+
+X = data_set.drop(columns=['Class'])
+y = data_set['Class']
+
+#Split into training, test, and validation sets
+X_train, X_temp, y_train, y_temp = train_test_split(data_set.drop(columns=['Class']), data_set['Class'], test_size=0.30, random_state=42)
+
+X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=1/3, random_state=42)
+
+X_train = X_train.fillna(X_train.mean())
+X_val   = X_val.fillna(X_val.mean())
+X_test  = X_test.fillna(X_test.mean())
+
+#Normalize the data
+scaler = StandardScaler()
+
+X_train_scaled = scaler.fit_transform(X_train)
+X_val_scaled = scaler.transform(X_val)
+X_test_scaled = scaler.transform(X_test)
+
+X_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns, index=X_train.index)
+X_val_scaled = pd.DataFrame(X_val_scaled, columns=X_val.columns, index=X_val.index)
+X_test_scaled = pd.DataFrame(X_test_scaled, columns=X_test.columns, index=X_test.index)
+
+display(X_train_scaled.head())
+
+#Helper Functions for all models
+
+def evaluate_model(name, model, X_test, y_test):
+    start_time = time.time()
+    y_pred = model.predict(X_test)
+    end_time = time.time()
+    test_time = (end_time - start_time) * 1000  # in milliseconds
+
+    # Compute metrics
+    cm = confusion_matrix(y_test, y_pred)
+    acc = accuracy_score(y_test, y_pred)
+    prec = precision_score(y_test, y_pred)
+    rec = recall_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
+
+    print(f"\n📊 {name} Results:")
+    print("----------------------")
+    print(f"Confusion Matrix:\n{cm}")
+    print(f"Accuracy:  {acc:.4f}")
+    print(f"Precision: {prec:.4f}")
+    print(f"Recall:    {rec:.4f}")
+    print(f"F1-score:  {f1:.4f}")
+    print(f"Test Time: {test_time:.2f} ms")
+
+    return {
+        "Model": name,
+        "Accuracy": acc,
+        "Precision": prec,
+        "Recall": rec,
+        "F1": f1,
+        "Test Time (ms)": test_time
+    }
+
+#SVM - Jacob
+from sklearn.svm import SVC
+
+svm_model = SVC(kernel='rbf', random_state=42)
+svm_model.fit(X_train_scaled, y_train)
+
+print("SVM Model:")
+print(evaluate_model("SVM (RBF)", svm_model, X_test_scaled, y_test))
+
+#Bashshar Atif - KNN
+from sklearn.neighbors import KNeighborsClassifier
+
+# Initialize and train the KNN model
+knn_model = KNeighborsClassifier(n_neighbors=5)  # You can adjust n_neighbors
+knn_model.fit(X_train_scaled, y_train)
+
+# Evaluate the KNN model using the helper function
+print("K-Nearest Neighbors Model:")
+print(evaluate_model("KNN", knn_model, X_test_scaled, y_test))
+
+#========================
+#Emma Winkeler, Random Forest
+#========================
+
+from sklearn.ensemble import RandomForestClassifier
+
+#Building a random forest
+#creates 100 trees
+RFClassifier = RandomForestClassifier(n_estimators=100, random_state=42)
+RFClassifier.fit(X_train_scaled, y_train) 
+y_pred = RFClassifier.predict(X_test_scaled) 
+
+#Evaluating the model
+#ooh there's a helper function!!!
+print("Random Forest Classifier Model: ")
+print(evaluate_model("RFC", RFClassifier, X_test_scaled, y_test))
+
+# ============================
+#  LOGISTIC REGRESSION MODEL
+#  Kirill Delyukin
+# ============================
+
+# ---- IMPORT LIBRARIES ---- #
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import (
+    confusion_matrix, precision_score, recall_score,
+    f1_score, accuracy_score, roc_auc_score, roc_curve
+)
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+print("✅ Libraries imported successfully")
+
+# The data loading, splitting, and scaling steps are removed as they are performed in previous cells.
+# X_train_scaled, X_val_scaled, X_test_scaled, y_train, y_val, y_test are already available.
+
+# ---- MODEL TRAINING ----
+print("\n⚙️ Training Logistic Regression model...")
+log_model = LogisticRegression(max_iter=1000, class_weight='balanced', random_state=42)
+log_model.fit(X_train_scaled, y_train)
+print("✅ Model training complete!")
+
+# ---- PREDICTIONS ----
+print("\n⚙️ Making predictions...")
+y_pred = log_model.predict(X_test_scaled)
+y_prob = log_model.predict_proba(X_test_scaled)[:, 1]
+print("✅ Predictions complete!")
+
+# ---- EVALUATION METRICS ----
+print("\n⚙️ Evaluating model performance...")
+
+# Evaluate the Logistic Regression model using the helper function
+lr_results = evaluate_model("Logistic Regression", log_model, X_test_scaled, y_test)
+print(lr_results)
+
+# Confusion Matrix
+cm = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(5,4))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=False)
+plt.title('Confusion Matrix - Logistic Regression')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
+
+# ROC Curve
+fpr, tpr, thresholds = roc_curve(y_test, y_prob)
+roc_auc = roc_auc_score(y_test, y_prob)
+plt.figure(figsize=(6,5))
+plt.plot(fpr, tpr, label=f'Logistic Regression (AUC={roc_auc:.4f})')
+plt.plot([0,1], [0,1], linestyle='--', color='gray')
+plt.title('ROC Curve - Logistic Regression')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.legend()
+plt.show()
+
+print("\n✅ All evaluation metrics generated successfully!")
+
+#  MLP MODEL - Felipe Coimbra
+
+from sklearn.neural_network import MLPClassifier
+from sklearn.metrics import roc_curve, auc
+
+mlp_model = MLPClassifier(
+    hidden_layer_sizes=(64, 32),
+    activation='relu',
+    solver='adam',
+    max_iter=100,
+    random_state=42
+)
+
+print("\n Training MLP model...")
+mlp_model.fit(X_train_scaled, y_train)
+print(" Training complete!")
+
+print("\n Evaluating MLP model...")
+mlp_results = evaluate_model("MLP Neural Network", mlp_model, X_test_scaled, y_test)
+print(mlp_results)
+
+# ROC curve for MLP
+y_prob = mlp_model.predict_proba(X_test_scaled)[:, 1]
+
+fpr, tpr, thresholds = roc_curve(y_test, y_prob)
+roc_auc = auc(fpr, tpr)
+
+plt.figure(figsize=(6,5))
+plt.plot(fpr, tpr, label=f"MLP (AUC = {roc_auc:.4f})")
+plt.plot([0, 1], [0, 1], linestyle="--")
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("ROC Curve - MLP Neural Network")
+plt.legend()
+plt.show()
